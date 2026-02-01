@@ -1,19 +1,22 @@
-# --- Entornos Virtuales (Lo más importante) ---
+# Entornos Virtuales
 venv/
 .venv/
 env/
 ENV/
 
-# --- Archivos compilados de Python (Se generan solos, no sirven en git) ---
+# Archivos compilados de Python
 __pycache__/
 *.pyc
 *.pyo
 
-# --- Archivos de sistema y editores (Basura) ---
+# Archivos de sistema y editores
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
 
-# --- Variables de entorno (Seguridad) ---
+# Variables de entorno
 .env
+
+# api key
+config.py

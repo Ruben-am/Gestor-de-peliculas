@@ -1,4 +1,3 @@
-# omdb_api.py
 import requests
 from config import OMDB_API_KEY, BASE_URL
 
