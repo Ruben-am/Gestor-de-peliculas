@@ -18,6 +18,83 @@ def cargar_datos():
     except:
         print("archivo no encontrado o formato incorrecto")
 
+def seleccionar_pelicula():
+    #funcion secundaria para la funcion de graficos
+    if df.empty:
+        print("No hay datos cargados")
+        return None
+
+    titulo = input("Introduce el titulo de la pelicula: ")
+
+    filtrado = df[df['Title'].str.contains(titulo, case=False, na=False)]
+
+    if filtrado.empty:
+        print("No se encontraron peliculas con ese titulo")
+        return None
+
+    return filtrado
+
+
+def graficos():
+    #muestra un grafico de una pelicula, pero antes hay q importar un archivo o hacer una consulta a la api
+    datos = seleccionar_pelicula()
+    if datos is None:
+        return
+
+    datos['imdbRating'] = pd.to_numeric(datos['imdbRating'], errors='coerce')
+
+    print(" ----------- GRAFICOS DE ACEPTACION ----------- ")
+    print("1. Histograma de ratings")
+    print("2. Evolucion del rating por año")
+    opcion = input("Elige grafico: ")
+
+    # grafico en horganigrama
+    if opcion == "1":
+        datos['imdbRating'].dropna().plot(kind='hist', bins=5)
+        plt.title("Distribucion del rating IMDb")
+        plt.xlabel("Rating")
+        plt.ylabel("Cantidad")
+        plt.tight_layout()
+        plt.show()
+
+    # grafico en linea
+    elif opcion == "2" and 'Year' in datos.columns:
+        datos['Year_Num'] = pd.to_numeric(datos['Year'], errors='coerce')
+        datos.sort_values('Year_Num').plot(
+            x='Year_Num',
+            y='imdbRating',
+            kind='line',
+            marker='o'
+        )
+        plt.title("Evolucion del rating por año")
+        plt.xlabel("Año")
+        plt.ylabel("Rating IMDb")
+        plt.tight_layout()
+        plt.show()
+
+    else:
+        print("No se puede generar el grafico")
+
+
+def estadisticas():
+    datos = seleccionar_pelicula()
+    if datos is None:
+        return
+
+    print(" ----------- ESTADISTICAS DE ACEPTACION ----------- ")
+
+    if 'imdbRating' in datos.columns:
+        datos['imdbRating'] = pd.to_numeric(datos['imdbRating'], errors='coerce')
+
+        print(f"Numero de registros: {len(datos)}")
+        print(f"Rating medio: {datos['imdbRating'].mean():.2f}")
+        print(f"Rating maximo: {datos['imdbRating'].max()}")
+        print(f"Rating minimo: {datos['imdbRating'].min()}")
+
+    if 'Year' in datos.columns:
+        print("\nAños disponibles:")
+        print(datos['Year'].unique())
+
 def buscar_y_annadir():
     global df
     buscar = input("Pelicula a buscar: ")
@@ -82,8 +159,8 @@ def menu():
         if opcion == "1": cargar_datos()
         elif opcion == "2": buscar_y_annadir()
         elif opcion == "3": ver_datos()
-        elif opcion == "4": print(" proximamente ") #pendiente de implementar
-        elif opcion == "5": print(" proximamente ") #pendiente de implementar
+        elif opcion == "4": estadisticas() 
+        elif opcion == "5": graficos()
         elif opcion == "6": exportar_csv()
         elif opcion == "7": break
         else: print("Opcion no valida")
